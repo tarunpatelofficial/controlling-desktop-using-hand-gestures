@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import csv
 import copy
@@ -10,10 +10,36 @@ from collections import deque
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
+import pyautogui
+import time
+from screen_brightness_control import get_brightness, set_brightness
 
+import os
 from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
+
+
+def open_video(file_path):
+    try:
+        # This opens the file using the default program
+        os.startfile(file_path)
+    except Exception as e:
+        print("An error occurred:", e)
+
+
+def increase_brightness():
+    current_brightness = get_brightness()
+    # Increase brightness by 10%, capped at 100%
+    new_brightness = min(current_brightness[0] + 10, 100)
+    set_brightness(new_brightness)
+
+
+def decrease_brightness():
+    current_brightness = get_brightness()
+    # Decrease brightness by 10%, capped at 0%
+    new_brightness = max(current_brightness[0] - 10, 0)
+    set_brightness(new_brightness)
 
 
 def get_args():
@@ -122,7 +148,9 @@ def main():
         image.flags.writeable = True
 
         #  ####################################################################
+
         if results.multi_hand_landmarks is not None:
+
             for hand_landmarks, handedness in zip(results.multi_hand_landmarks,
                                                   results.multi_handedness):
                 # Bounding box calculation
@@ -141,8 +169,34 @@ def main():
 
                 # Hand sign classification
                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
-                if hand_sign_id == 2:  # Point gesture
+                if hand_sign_id == "Not applicable":  # Point gesture
                     point_history.append(landmark_list[8])
+
+                if hand_sign_id == 0:
+                    increase_brightness()
+
+                if hand_sign_id == 1:
+                    decrease_brightness()
+
+                if hand_sign_id == 2:
+                    video_file_path = r"D:\MOVIES\Spider-Man Movies\The Amazing Spiderman (2012) [1080p]\The.Amazing.Spiderman.2012.mp4"
+                    open_video(video_file_path)
+
+                if hand_sign_id == 3:
+                    pyautogui.press("playpause")
+
+                if hand_sign_id == 4:
+                    pyautogui.press('volumeup')
+
+                if hand_sign_id == 5:
+                    pyautogui.press('volumedown')
+
+                if hand_sign_id == 6:
+                    pyautogui.hotkey('right')
+
+                if hand_sign_id == 7:
+                    pyautogui.hotkey('left')
+
                 else:
                     point_history.append([0, 0])
 

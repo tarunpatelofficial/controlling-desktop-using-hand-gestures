@@ -1,4 +1,4 @@
-# controlling-dessktop-using-handg-gestures
+# controlling-dessktop-using-hand-gestures
 
 Estimate hand pose using MediaPipe (Python version).<br> This is a sample 
 program that recognizes hand signs and finger gestures with a simple MLP using the detected key points and performs a feature in the desktop
